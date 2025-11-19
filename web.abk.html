@@ -1,0 +1,101 @@
+from pathlib import Path
+import zipfile
+import sys
+
+# Configure paths (creates folder next to this script)
+project_dir = Path.cwd() / "birthday_wishes_web"
+project_dir.mkdir(parents=True, exist_ok=True)
+
+html_file = project_dir / "index.html"
+
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Birthday Wishes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin:0; padding:0; overflow:hidden; background:#ffe6f0; }
+        .slider { position:relative; width:100%; height:100vh; }
+        .slide { position:absolute; width:100%; height:100%; display:none; justify-content:center; align-items:center; flex-direction:column; text-align:center; color:#fff; transition:all 1s ease; background-size:cover; background-position:center; }
+        .slide.active { display:flex; }
+        .slide h1 { font-size:4em; margin:.5em 0; }
+        .slide p { font-size:1.5em; }
+        .controls { position:absolute; bottom:30px; width:100%; display:flex; justify-content:center; gap:20px; }
+        .btn { background:#ff4081; border:none; padding:10px 20px; font-size:1em; color:#fff; cursor:pointer; border-radius:5px; transition:.3s; }
+        .btn:hover { background:#e73370; }
+        @media (max-width:600px) { .slide h1 { font-size:2em; } .slide p { font-size:1em; } }
+    </style>
+</head>
+<body>
+    <div class="slider">
+        <div class="slide active" style="background:url('https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?fit=crop&w=1950&q=80');">
+            <h1>Happy Birthday!</h1>
+            <p>Wishing you a day full of happiness and a year full of joy.</p>
+        </div>
+        <div class="slide" style="background:url('https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?fit=crop&w=1950&q=80');">
+            <h1>Celebrate!</h1>
+            <p>May your birthday be as amazing as you are.</p>
+        </div>
+        <div class="slide" style="background:url('https://images.unsplash.com/photo-1504198453319-5ce911bafcde?fit=crop&w=1950&q=80');">
+            <h1>Special Day</h1>
+            <p>Cheers to another year of wonderful adventures.</p>
+        </div>
+        <div class="slide" style="background:url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?fit=crop&w=1950&q=80');">
+            <h1>Enjoy!</h1>
+            <p>May your day be filled with love, laughter, and cake!</p>
+        </div>
+        <div class="slide" style="background:url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?fit=crop&w=1950&q=80');">
+            <h1>Best Wishes</h1>
+            <p>Sending you smiles, hugs, and lots of birthday cheer!</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="prevSlide()">Prev</button>
+            <button class="btn" onclick="nextSlide()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        // Auto-advance and pause on hover
+        let interval = setInterval(nextSlide, 5000);
+        document.querySelector('.slider').addEventListener('mouseenter', () => clearInterval(interval));
+        document.querySelector('.slider').addEventListener('mouseleave', () => interval = setInterval(nextSlide, 5000));
+    </script>
+</body>
+</html>
+"""
+
+try:
+    html_file.write_text(html_content, encoding="utf-8")
+except Exception as e:
+    print(f"Failed to write HTML file: {e}", file=sys.stderr)
+    raise
+
+zip_path = Path.cwd() / "birthday_wishes_web.zip"
+try:
+    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.write(html_file, arcname="index.html")
+except Exception as e:
+    print(f"Failed to create ZIP: {e}", file=sys.stderr)
+    raise
+
+print(f"Project written to: {project_dir}")
+print(f"ZIP archive created: {zip_path}")</div>

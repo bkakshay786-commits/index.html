@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>dont worry — slider</title>
+    <style>
+        :root{
+            --accent:#ff4081;
+            --accent-hover:#e73370;
+            --fg:#fff;
+            --overlay:rgba(0,0,0,0.35);
+            --radius:8px;
+        }
+
+        html,body{height:100%;margin:0;font-family:Arial,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",sans-serif;background:#ffe6f0;}
+        .slider{
+            position:relative;
+            height:100vh;
+            width:100%;
+            overflow:hidden;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .slides{
+            position:relative;
+            width:100%;
+            height:100%;
+        }
+
+        .slide{
+            position:absolute;
+            inset:0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            color:var(--fg);
+            background-size:cover;
+            background-position:center;
+            opacity:0;
+            transform:scale(1.02);
+            transition:opacity 800ms ease,transform 800ms ease;
+            padding:2rem;
+            box-sizing:border-box;
+        }
+
+        .slide::before{
+            content:"";
+            position:absolute;inset:0;
+            background:var(--overlay);
+            pointer-events:none;
+        }
+
+        .slide[aria-hidden="false"]{
+            opacity:1;
+            transform:scale(1);
+            z-index:1;
+        }
+
+        .content{
+            position:relative;
+            z-index:2;
+            max-width:900px;
+            width:100%;
+        }
+
+        h1{font-size:clamp(1.6rem,4vw,3.8rem);margin:0 0 .4rem;text-transform:capitalize;letter-spacing:0.6px}
+        p{font-size:clamp(1rem,2.1vw,1.4rem);margin:0;color:rgba(255,255,255,0.95)}
+
+        .controls{
+            position:absolute;
+            left:50%;
+            transform:translateX(-50%);
+            bottom:28px;
+            display:flex;
+            gap:.5rem;
+            align-items:center;
+            z-index:3;
+        }
+
+        .btn{
+            background:var(--accent);
+            color:var(--fg);
+            border:0;
+            padding:.6rem .9rem;
+            border-radius:var(--radius);
+            cursor:pointer;
+            font-size:1rem;
+            transition:background .15s ease,transform .12s ease;
+        }
+        .btn:hover{background:var(--accent-hover)}
+        .btn:active{transform:translateY(1px)}
+
+        .dots{
+            display:flex;
+            gap:.5rem;
+            align-items:center;
+        }
+        .dot{
+            width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.45);border:0;cursor:pointer;
+        }
+        .dot[aria-pressed="true"]{background:var(--fg)}
+
+        .play-toggle{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(255,255,255,0.08);border-radius:6px;color:var(--fg);border:0}
+
+        /* keyboard focus */
+        .btn:focus,.dot:focus,.play-toggle:focus{outline:2px solid rgba(255,255,255,0.16);outline-offset:2px}
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce){
+            .slide{transition:none}
+        }
+
+        /* small screens layout */
+        @media (max-width:520px){
+            h1{font-size:1.6rem}
+            .controls{bottom:18px}
+        }
+    </style>
+</head>
+<body>
+    <main class="slider" role="region" aria-label="Image slider — dont worry">
+        <div class="slides" id="slides">
+            <section class="slide" role="group" aria-label="Slide 1" aria-hidden="false"
+                style="background-image:url('https://images.unsplash.com/photo-1598970434795-0c54fe7c0642?fit=crop&w=1950&q=80')">
+                <div class="content">
+                    <h1>Hi, how are you</h1>
+                    <p>You might not be feeling well — take a deep breath. Small steps help.</p>
+                </div>
+            </section>
+
+            <section class="slide" role="group" aria-label="Slide 2" aria-hidden="true"
+                style="background-image:url('https://images.unsplash.com/photo-1526470608268-f674ce90ebd4?fit=crop&w=1950&q=80')">
+                <div class="content">
+                    <h1>I can help you</h1>
+                    <p>Here are ideas and tools to make things easier. You're not alone.</p>
+                </div>
+            </section>
+
+            <section class="slide" role="group" aria-label="Slide 3" aria-hidden="true"
+                style="background-image:url('https://images.unsplash.com/photo-1504198453319-5ce911bafcde?fit=crop&w=1950&q=80')">
+                <div class="content">
+                    <h1>That's enough</h1>
+                    <p>Pause, reflect, then continue when you're ready.</p>
+                </div>
+            </section>
+
+            <section class="slide" role="group" aria-label="Slide 4" aria-hidden="true"
+                style="background-image:url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?fit=crop&w=1950&q=80')">
+                <div class="content">
+                    <h1>Enjoy!</h1>
+                    <p>Breathe, smile, and enjoy the moment.</p>
+                </div>
+            </section>
+
+            <section class="slide" role="group" aria-label="Slide 5" aria-hidden="true"
+                style="background-image:url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?fit=crop&w=1950&q=80')">
+                <div class="content">
+                    <h1>Best Wishes</h1>
+                    <p>Sending you smiles, hugs, and lots of good cheer!</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="controls" aria-hidden="false">
+            <button class="btn" id="prevBtn" type="button" aria-label="Previous slide">Prev</button>
+            <div class="dots" id="dots" role="tablist" aria-label="Slide indicators"></div>
+            <button class="btn" id="nextBtn" type="button" aria-label="Next slide">Next</button>
+            <button class="play-toggle" id="playPause" type="button" aria-pressed="false" aria-label="Pause autoplay">Pause</button>
+        </div>
+    </main>
+
+    <script>
+        (function(){
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            const dotsContainer = document.getElementById('dots');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const playPause = document.getElementById('playPause');
+
+            let current = 0;
+            let timer = null;
+            const INTERVAL = 5000;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // create dots
+            slides.forEach((s,i)=>{
+                const btn = document.createElement('button');
+                btn.className = 'dot';
+                btn.type = 'button';
+                btn.setAttribute('aria-label', `Go to slide ${i+1}`);
+                btn.setAttribute('aria-pressed', i===0 ? 'true' : 'false');
+                btn.addEventListener('click', ()=>goTo(i, true));
+                dotsContainer.appendChild(btn);
+            });
+
+            const dots = Array.from(dotsContainer.children);
+
+            function show(index){
+                slides.forEach((s,i)=>{
+                    const hidden = i !== index;
+                    s.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+                    dots[i].setAttribute('aria-pressed', i===index ? 'true' : 'false');
+                });
+            }
+
+            function goTo(index, userTriggered=false){
+                current = (index + slides.length) % slides.length;
+                show(current);
+                if(userTriggered) pauseAutoplay(true);
+            }
+
+            function next(){
+                goTo(current + 1);
+            }
+            function prev(){
+                goTo(current - 1);
+            }
+
+            // autoplay control
+            function startAutoplay(){
+                if(prefersReducedMotion) return;
+                stopAutoplay();
+                timer = setInterval(next, INTERVAL);
+                playPause.textContent = 'Pause';
+                playPause.setAttribute('aria-pressed','false');
+            }
+            function stopAutoplay(){
+                if(timer) { clearInterval(timer); timer = null; }
+            }
+            function pauseAutoplay(userAction=false){
+                stopAutoplay();
+                playPause.textContent = 'Play';
+                playPause.setAttribute('aria-pressed','true');
+                if(userAction) playPause.focus();
+            }
+            function toggleAutoplay(){
+                if(timer) pauseAutoplay();
+                else startAutoplay();
+            }
+
+            // events
+            nextBtn.addEventListener('click', ()=>{ next(); pauseAutoplay(true); });
+            prevBtn.addEventListener('click', ()=>{ prev(); pauseAutoplay(true); });
+            playPause.addEventListener('click', ()=>{ toggleAutoplay(); });
+
+            // pause on hover/focus
+            const slider = document.querySelector('.slider');
+            slider.addEventListener('mouseenter', ()=>{ stopAutoplay(); });
+            slider.addEventListener('mouseleave', ()=>{ if(!playPause.getAttribute('aria-pressed')==='true') startAutoplay(); startAutoplay(); });
+
+            // keyboard navigation
+            document.addEventListener('keydown', (e)=>{
+                if(e.key === 'ArrowRight'){ next(); pauseAutoplay(true); }
+                if(e.key === 'ArrowLeft'){ prev(); pauseAutoplay(true); }
+                if(e.key === ' ' || e.key === 'Spacebar'){ e.preventDefault(); toggleAutoplay(); }
+            });
+
+            // init
+            show(current);
+            if(!prefersReducedMotion) startAutoplay();
+
+            // ensure images are visible once loaded (simple progressive enhancement)
+            slides.forEach(s=>{
+                const imgUrl = s.style.backgroundImage.replace(/^(url\(|\)$|["'])/g,'');
+                const img = new Image();
+                img.src = imgUrl;
+            });
+        })();
+    </script>
+</body>
+</html>
